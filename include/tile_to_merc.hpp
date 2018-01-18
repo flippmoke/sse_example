@@ -1,4 +1,4 @@
-#include <mapbox/geometry.hpp>
+#include <mapbox/geometry/box.hpp>
 
 // sse
 #include <x86intrin.h>
@@ -32,22 +32,22 @@ using box_vector = std::vector<mapbox::geometry::box<T>>;
 mapbox::geometry::box<double> box_from_tile(tile const& t)
 {
 
-    const double tile_size = 2.0 * HALF_OF_EQUATOR / (1ul << t.z);
-    double minx = -HALF_OF_EQUATOR + t.x * tile_size;
-    double miny = HALF_OF_EQUATOR - (t.y + 1.0) * tile_size;
-    double maxx = -HALF_OF_EQUATOR + (t.x + 1.0) * tile_size;
-    double maxy = HALF_OF_EQUATOR - t.y * tile_size;
+    const double tile_size = 2.0 * HALF_OF_EQUATOR / static_cast<float>(1ul << t.z);
+    double minx = -HALF_OF_EQUATOR + static_cast<double>(t.x) * tile_size;
+    double miny = HALF_OF_EQUATOR - (static_cast<double>(t.y) + 1.0) * tile_size;
+    double maxx = -HALF_OF_EQUATOR + (static_cast<double>(t.x) + 1.0) * tile_size;
+    double maxy = HALF_OF_EQUATOR - static_cast<double>(t.y) * tile_size;
     return {{minx, miny}, {maxx, maxy}};
 }
 
 mapbox::geometry::box<float> box_from_tile_float(tile const& t)
 {
 
-    const float tile_size = 2.0f * static_cast<float>(HALF_OF_EQUATOR) / (1ul << t.z);
-    float minx = -static_cast<float>(HALF_OF_EQUATOR) + t.x * tile_size;
-    float miny = static_cast<float>(HALF_OF_EQUATOR) - (t.y + 1.0f) * tile_size;
-    float maxx = -static_cast<float>(HALF_OF_EQUATOR) + (t.x + 1.0f) * tile_size;
-    float maxy = static_cast<float>(HALF_OF_EQUATOR) - t.y * tile_size;
+    const float tile_size = 2.0f * static_cast<float>(HALF_OF_EQUATOR) / static_cast<float>(1ul << t.z);
+    float minx = -static_cast<float>(HALF_OF_EQUATOR) + static_cast<float>(t.x) * tile_size;
+    float miny = static_cast<float>(HALF_OF_EQUATOR) - (static_cast<float>(t.y) + 1.0f) * tile_size;
+    float maxx = -static_cast<float>(HALF_OF_EQUATOR) + (static_cast<float>(t.x) + 1.0f) * tile_size;
+    float maxy = static_cast<float>(HALF_OF_EQUATOR) - static_cast<float>(t.y) * tile_size;
     return {{minx, miny}, {maxx, maxy}};
 }
 
@@ -123,9 +123,9 @@ box_vector<float> box_from_tile_sse_float(tile_vector const& tiles)
     std::size_t i = 0;
     for (; i + 3 < t_size; i += 4)
     {
-        __m128d x = _mm_cvtepi32_ps(_mm_set_epi32(tiles[i + 3].x, tiles[i + 2].x, tiles[i + 1].x, tiles[i].x));
-        __m128d y = _mm_cvtepi32_ps(_mm_set_epi32(tiles[i + 3].y, tiles[i + 2].y, tiles[i + 1].y, tiles[i].y));
-        __m128d shifted_z = _mm_cvtepi32_ps(_mm_sllv_epi32(_mm_set1_epi32(1), _mm_set_epi32(tiles[i + 3].z, tiles[i + 2].z, tiles[i + 1].z, tiles[i].z)));
+        __m128 x = _mm_cvtepi32_ps(_mm_set_epi32(tiles[i + 3].x, tiles[i + 2].x, tiles[i + 1].x, tiles[i].x));
+        __m128 y = _mm_cvtepi32_ps(_mm_set_epi32(tiles[i + 3].y, tiles[i + 2].y, tiles[i + 1].y, tiles[i].y));
+        __m128 shifted_z = _mm_cvtepi32_ps(_mm_sllv_epi32(_mm_set1_epi32(1), _mm_set_epi32(tiles[i + 3].z, tiles[i + 2].z, tiles[i + 1].z, tiles[i].z)));
 
         // If no AVX2 use below
         //__m128 shifted_z = _mm_set_ps(static_cast<float>(1ul << tiles[i+3].z), static_cast<float>(1ul << tiles[i+2].z), static_cast<float>(1ul << tiles[i+1].z), static_cast<float>(1ul << tiles[i].z));
