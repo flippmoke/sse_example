@@ -15,7 +15,7 @@ static void BM_double(benchmark::State& state) // NOLINT google-runtime-referenc
         benchmark::DoNotOptimize(sse_example::box_from_tile(tiles));
     }
 
-    state.counters["Tiles"] = tiles.size();
+    state.counters["Tiles"] = static_cast<double>(tiles.size());
 }
 
 BENCHMARK(BM_double)->RangeMultiplier(4)->Range(32, 1 << 14);
@@ -34,7 +34,7 @@ static void BM_float(benchmark::State& state) // NOLINT google-runtime-reference
         benchmark::DoNotOptimize(sse_example::box_from_tile_float(tiles));
     }
 
-    state.counters["Tiles"] = tiles.size();
+    state.counters["Tiles"] = static_cast<double>(tiles.size());
 }
 
 BENCHMARK(BM_float)->RangeMultiplier(4)->Range(32, 1 << 14);
@@ -53,7 +53,7 @@ static void BM_sse_double(benchmark::State& state) // NOLINT google-runtime-refe
         benchmark::DoNotOptimize(sse_example::box_from_tile_sse_double(tiles));
     }
 
-    state.counters["Tiles"] = tiles.size();
+    state.counters["Tiles"] = static_cast<double>(tiles.size());
 }
 
 BENCHMARK(BM_sse_double)->RangeMultiplier(4)->Range(32, 1 << 14);
@@ -73,7 +73,7 @@ static void BM_sse_float(benchmark::State& state) // NOLINT google-runtime-refer
         benchmark::DoNotOptimize(out.size());
     }
 
-    state.counters["Tiles"] = tiles.size();
+    state.counters["Tiles"] = static_cast<double>(tiles.size());
 }
 
 BENCHMARK(BM_sse_float)->RangeMultiplier(4)->Range(32, 1 << 14);
